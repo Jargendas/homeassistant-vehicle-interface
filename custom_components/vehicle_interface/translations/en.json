@@ -1,0 +1,22 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "data": {
+                    "identifier": "Vehicle Identifier",
+                    "update_time": "Last Data Update Time",
+                    "mileage": "Total Mileage",
+                    "door_lock": "Doors Locked/Unlocked",
+                    "fuel_range": "Fuel Range",
+                    "electric_range": "Electric Range",
+                    "state_of_charge": "Electric State of Charge",
+                    "connector_status": "Charger Connected/Disconnected",
+                    "latitude": "Location Latitude",
+                    "longitude": "Location Longitude"
+                },
+                "description": "Please select the appropriate vehicle entities.",
+                "title": "Vehicle Configuration"
+            }
+        }
+    }
+}

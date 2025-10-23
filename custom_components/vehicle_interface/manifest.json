@@ -1,0 +1,17 @@
+{
+  "domain": "vehicle_interface",
+  "name": "Vehicle Interface",
+  "codeowners": [
+    "@Jargendas"
+  ],
+  "config_flow": true,
+  "dependencies": [
+    "http"
+  ],
+  "documentation": "https://github.com/Jargendas/homeassistant-vehicle-interface",
+  "iot_class": "calculated",
+  "issue_tracker": "https://github.com/Jargendas/homeassistant-vehicle-interface/issues",
+  "requirements": [],
+  "single_config_entry": true,
+  "version": "1.0.0"
+}
