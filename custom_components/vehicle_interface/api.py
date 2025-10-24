@@ -21,7 +21,7 @@ class VehicleInterfaceAPI(HomeAssistantView):
         """Initialize API functionality for entry."""
         self.hass = hass
         self.entry = entry
-        identifier = entry.data.get("identifier")
+        identifier = str(entry.data.get("identifier")).lower().replace(" ", "_")
         self.url = f"/api/{identifier}"
         self.name = f"api:{identifier}"
         _LOGGER.debug("Vehicle Interface API initialized as %s", self.url)
