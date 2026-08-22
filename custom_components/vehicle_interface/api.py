@@ -55,7 +55,7 @@ class VehicleInterfaceAPI(HomeAssistantView):
         tracker_id = self.entry.data.get(CONF_DEVICE_TRACKER)
         if tracker_id:
             tracker_state = self.hass.states.get(tracker_id)
-            if tracker_state and tracker_state.state not in ("unknown", "unavailable", None):
+            if tracker_state:
                 lat = tracker_state.attributes.get("latitude")
                 lon = tracker_state.attributes.get("longitude")
                 if lat is not None:
