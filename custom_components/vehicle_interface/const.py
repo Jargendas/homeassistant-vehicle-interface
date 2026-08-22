@@ -2,6 +2,8 @@
 
 DOMAIN = "vehicle_interface"
 
+CONF_DEVICE_TRACKER = "device_tracker"
+
 # Die Keys, die im ConfigFlow als auswählbare Sensoren auftauchen
 SENSOR_KEYS = {
     "update_time": "timestamp",

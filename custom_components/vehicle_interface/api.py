@@ -7,7 +7,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.http import HomeAssistantView
 
-from .const import SENSOR_KEYS
+from .const import CONF_DEVICE_TRACKER, SENSOR_KEYS
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -50,6 +50,19 @@ class VehicleInterfaceAPI(HomeAssistantView):
                 return None
 
         states = {k: get_value(v) for k, v in sensors_ids.items() if v}
+
+        # If a device_tracker is configured, extract lat/lon from it (takes priority)
+        tracker_id = self.entry.data.get(CONF_DEVICE_TRACKER)
+        if tracker_id:
+            tracker_state = self.hass.states.get(tracker_id)
+            if tracker_state:
+                lat = tracker_state.attributes.get("latitude")
+                lon = tracker_state.attributes.get("longitude")
+                if lat is not None:
+                    states["latitude"] = float(lat)
+                if lon is not None:
+                    states["longitude"] = float(lon)
+
         _LOGGER.debug("Returning data: %s", str(states))
         return web.json_response(states)
 
