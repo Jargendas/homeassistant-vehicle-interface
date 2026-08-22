@@ -12,7 +12,8 @@
                     "state_of_charge": "Electric State of Charge",
                     "connector_status": "Charger Connected/Disconnected",
                     "latitude": "Location Latitude",
-                    "longitude": "Location Longitude"
+                    "longitude": "Location Longitude",
+                    "device_tracker": "Device Tracker (overrides Latitude/Longitude)"
                 },
                 "description": "Please select the appropriate vehicle entities.",
                 "title": "Vehicle Configuration"
