@@ -61,10 +61,10 @@ class EnergyStatsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         "filter": {
                             "domain": (
                                 "binary_sensor"
-                                if (dev_class in {"plug", "lock", "cold"})
+                                if (dev_class in {"plug", "lock"} or dev_class is None)
                                 else "sensor"
                             ),
-                            "device_class": dev_class,
+                            **({"device_class": dev_class} if dev_class else {}),
                         }
                     }
                 }
