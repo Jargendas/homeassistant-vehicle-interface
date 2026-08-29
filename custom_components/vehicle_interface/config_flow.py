@@ -50,14 +50,6 @@ class EnergyStatsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         )
         schema_dict[vol_key] = str
 
-        vol_key = vol.Optional(
-            CONF_DEVICE_TRACKER,
-            description={"suggested_value": defaults.get(CONF_DEVICE_TRACKER)},
-        )
-        schema_dict[vol_key] = selector.selector(
-            {"entity": {"filter": {"domain": "device_tracker"}}}
-        )
-
         for key, dev_class in SENSOR_KEYS.items():
             vol_key = vol.Optional(
                 key, description={"suggested_value": defaults.get(key)}
@@ -69,14 +61,22 @@ class EnergyStatsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         "filter": {
                             "domain": (
                                 "binary_sensor"
-                                if (dev_class in {"plug", "lock"})
+                                if (dev_class in {"plug", "lock"} or dev_class is None)
                                 else "sensor"
                             ),
-                            "device_class": dev_class,
+                            **({"device_class": dev_class} if dev_class else {}),
                         }
                     }
                 }
             )
+
+        vol_key = vol.Optional(
+            CONF_DEVICE_TRACKER,
+            description={"suggested_value": defaults.get(CONF_DEVICE_TRACKER)},
+        )
+        schema_dict[vol_key] = selector.selector(
+            {"entity": {"filter": {"domain": "device_tracker"}}}
+        )
 
         data_schema = vol.Schema(schema_dict)
 

@@ -11,6 +11,7 @@
                     "electric_range": "Electric Range",
                     "state_of_charge": "Electric State of Charge",
                     "connector_status": "Charger Connected/Disconnected",
+                    "aircon": "Air Conditioning On/Off",
                     "latitude": "Location Latitude",
                     "longitude": "Location Longitude",
                     "device_tracker": "Device Tracker (overrides Latitude/Longitude)"
