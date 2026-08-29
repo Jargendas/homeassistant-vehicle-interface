@@ -13,6 +13,7 @@ SENSOR_KEYS = {
     "electric_range": "distance",
     "state_of_charge": "battery",
     "connector_status": "plug",
+    "aircon": "cold",
     "latitude": "Location Latitude",
     "longitude": "Location Longitude",
 }
