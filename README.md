@@ -62,6 +62,7 @@ To update the configuration later, open the integration entry and choose **Recon
 | **Location Latitude** | Sensor entity providing the vehicle's latitude (used if no Device Tracker is configured). |
 | **Location Longitude** | Sensor entity providing the vehicle's longitude (used if no Device Tracker is configured). |
 | **Device Tracker** | A `device_tracker` entity. When set, its `latitude` and `longitude` attributes override the individual location sensors above. |
+| **Vehicle Image** | An `image` entity providing a picture of the vehicle. When set, it is served at `/api/<identifier>/image` and referenced by the `image` field of the main response. |
 
 All fields except **Vehicle Identifier** are optional.
 
@@ -98,7 +99,8 @@ Authorization: ******
   "connector_status": false,
   "aircon": false,
   "latitude": 48.1374,
-  "longitude": 11.5755
+  "longitude": 11.5755,
+  "image": "/api/my_car/image"
 }
 ```
 
@@ -118,6 +120,17 @@ Only fields that are configured and have a valid state are included in the respo
 | `aircon` | `boolean` | `true` = on |
 | `latitude` | `number` | Decimal degrees |
 | `longitude` | `number` | Decimal degrees |
+| `image` | `string` | Path of the vehicle image endpoint. Only present if a **Vehicle Image** is configured. |
+
+### Vehicle Image
+
+If a **Vehicle Image** entity is configured, the image can be downloaded with:
+
+```
+GET /api/<identifier>/image
+```
+
+The same `Authorization` header is required. The response body is the binary image, with the `Content-Type` provided by the image entity. `404` is returned if no image is configured or available.
 
 ---
 
@@ -127,4 +140,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [MIT License](LICENSE).

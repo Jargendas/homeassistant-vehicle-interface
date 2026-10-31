@@ -6,7 +6,7 @@ import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.helpers import selector
 
-from .const import CONF_DEVICE_TRACKER, DOMAIN, SENSOR_KEYS
+from .const import CONF_DEVICE_TRACKER, CONF_VEHICLE_IMAGE, DOMAIN, SENSOR_KEYS
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -27,6 +27,7 @@ class EnergyStatsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             data = {k: user_input.get(k) for k in SENSOR_KEYS}
             data["identifier"] = user_input.get("identifier")
             data[CONF_DEVICE_TRACKER] = user_input.get(CONF_DEVICE_TRACKER)
+            data[CONF_VEHICLE_IMAGE] = user_input.get(CONF_VEHICLE_IMAGE)
 
             if self.source == config_entries.SOURCE_RECONFIGURE:
                 entry = self._get_reconfigure_entry()
@@ -76,6 +77,14 @@ class EnergyStatsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         )
         schema_dict[vol_key] = selector.selector(
             {"entity": {"filter": {"domain": "device_tracker"}}}
+        )
+
+        vol_key = vol.Optional(
+            CONF_VEHICLE_IMAGE,
+            description={"suggested_value": defaults.get(CONF_VEHICLE_IMAGE)},
+        )
+        schema_dict[vol_key] = selector.selector(
+            {"entity": {"filter": {"domain": "image"}}}
         )
 
         data_schema = vol.Schema(schema_dict)
