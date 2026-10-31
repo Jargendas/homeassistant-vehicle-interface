@@ -1,15 +1,23 @@
 """API implementation of Vehicle Interface integration."""
 
 import logging
+from http import HTTPStatus
 
 from aiohttp import web
+from homeassistant.components.image import DATA_COMPONENT as IMAGE_DATA_COMPONENT
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.http import HomeAssistantView
 
-from .const import CONF_DEVICE_TRACKER, SENSOR_KEYS
+from .const import CONF_DEVICE_TRACKER, CONF_VEHICLE_IMAGE, SENSOR_KEYS
 
 _LOGGER = logging.getLogger(__name__)
+
+
+def _get_identifier(entry: ConfigEntry) -> str:
+    """Return the normalized vehicle identifier used in the API paths."""
+    return str(entry.data.get("identifier")).lower().replace(" ", "_")
 
 
 class VehicleInterfaceAPI(HomeAssistantView):
@@ -21,7 +29,7 @@ class VehicleInterfaceAPI(HomeAssistantView):
         """Initialize API functionality for entry."""
         self.hass = hass
         self.entry = entry
-        identifier = str(entry.data.get("identifier")).lower().replace(" ", "_")
+        identifier = _get_identifier(entry)
         self.url = f"/api/{identifier}"
         self.name = f"api:{identifier}"
         _LOGGER.debug("Vehicle Interface API initialized as %s", self.url)
@@ -63,11 +71,50 @@ class VehicleInterfaceAPI(HomeAssistantView):
                 if lon is not None:
                     states["longitude"] = float(lon)
 
+        if self.entry.data.get(CONF_VEHICLE_IMAGE):
+            states["image"] = f"{self.url}/image"
+
         _LOGGER.debug("Returning data: %s", str(states))
         return web.json_response(states)
+
+
+class VehicleInterfaceImageAPI(HomeAssistantView):
+    """Serve the configured vehicle image."""
+
+    requires_auth = True
+
+    def __init__(self, hass: HomeAssistant, entry: ConfigEntry) -> None:
+        """Initialize image endpoint for entry."""
+        self.hass = hass
+        self.entry = entry
+        identifier = _get_identifier(entry)
+        self.url = f"/api/{identifier}/image"
+        self.name = f"api:{identifier}:image"
+
+    async def get(self, _request) -> web.Response:  # noqa: ANN001
+        """Return the vehicle image as binary response."""
+        entity_id = self.entry.data.get(CONF_VEHICLE_IMAGE)
+        if not entity_id:
+            return web.Response(status=HTTPStatus.NOT_FOUND)
+
+        component = self.hass.data.get(IMAGE_DATA_COMPONENT)
+        entity = component.get_entity(entity_id) if component else None
+        if entity is None:
+            return web.Response(status=HTTPStatus.NOT_FOUND)
+
+        try:
+            content = await entity.async_image()
+        except HomeAssistantError:
+            _LOGGER.exception("Could not fetch vehicle image from %s", entity_id)
+            return web.Response(status=HTTPStatus.INTERNAL_SERVER_ERROR)
+        if not content:
+            return web.Response(status=HTTPStatus.NOT_FOUND)
+
+        return web.Response(body=content, content_type=entity.content_type)
 
 
 def async_setup_api(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Set up the API."""
     _LOGGER.debug("Executing async_setup_api...")
     hass.http.register_view(VehicleInterfaceAPI(hass, entry))
+    hass.http.register_view(VehicleInterfaceImageAPI(hass, entry))
